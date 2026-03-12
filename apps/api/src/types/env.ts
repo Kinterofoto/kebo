@@ -18,6 +18,7 @@ export interface Variables {
   db: DrizzleClient
   userId: string
   userEmail?: string
+  userMetadata?: { full_name?: string; avatar_url?: string }
   requestId: string
 }
 

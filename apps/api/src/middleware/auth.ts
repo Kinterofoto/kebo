@@ -9,6 +9,11 @@ interface JWTPayload {
   iat?: number
   aud?: string
   role?: string
+  user_metadata?: {
+    full_name?: string
+    avatar_url?: string
+    [key: string]: unknown
+  }
 }
 
 function base64UrlDecode(str: string): string {
@@ -79,6 +84,7 @@ export const authMiddleware = createMiddleware<AppEnv>(async (c, next) => {
 
     c.set("userId", payload.sub)
     c.set("userEmail", payload.email)
+    c.set("userMetadata", payload.user_metadata)
 
     await next()
   } catch (error) {

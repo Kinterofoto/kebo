@@ -21,6 +21,28 @@ export class UserService {
     })
   }
 
+  static async ensureProfile(
+    db: DrizzleClient,
+    userId: string,
+    meta?: { email?: string; full_name?: string; avatar_url?: string },
+  ) {
+    const existing = await this.getProfile(db, userId)
+    if (existing) return existing
+
+    const [created] = await db
+      .insert(profiles)
+      .values({
+        user_id: userId,
+        email: meta?.email,
+        full_name: meta?.full_name,
+        avatar_url: meta?.avatar_url,
+      })
+      .onConflictDoNothing({ target: profiles.user_id })
+      .returning()
+
+    return created ?? (await this.getProfile(db, userId))
+  }
+
   static async updateProfile(
     db: DrizzleClient,
     userId: string,

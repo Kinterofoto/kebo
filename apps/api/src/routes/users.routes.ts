@@ -49,7 +49,12 @@ base.use("/*", authMiddleware)
 const app = base
   .openapi(getProfileRoute, async (c) => {
     const userId = c.get("userId")
-    const profile = await UserService.getProfile(c.get("db"), userId)
+    const meta = {
+      email: c.get("userEmail"),
+      full_name: c.get("userMetadata")?.full_name,
+      avatar_url: c.get("userMetadata")?.avatar_url,
+    }
+    const profile = await UserService.ensureProfile(c.get("db"), userId, meta)
     if (!profile) {
       return c.json({ error: "Profile not found" }, 404)
     }
