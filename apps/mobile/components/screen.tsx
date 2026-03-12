@@ -11,9 +11,9 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   Keyboard,
-  SafeAreaView,
   StatusBar as RNStatusBar,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { $styles } from "@/theme";
 import {
   ExtendedEdge,

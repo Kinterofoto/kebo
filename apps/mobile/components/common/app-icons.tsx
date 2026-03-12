@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, Pressable, Image, Text, StyleSheet, Dimensions, SafeAreaView } from "react-native";
+import { View, Pressable, Image, Text, StyleSheet, Dimensions } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { MotiView } from "moti";
 import { Ionicons } from "@expo/vector-icons";
 import { GestureHandlerRootView, LongPressGestureHandler, State, PanGestureHandler } from "react-native-gesture-handler";

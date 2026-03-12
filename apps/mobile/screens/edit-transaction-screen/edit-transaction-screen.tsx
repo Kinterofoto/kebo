@@ -2,10 +2,10 @@ import logger from "@/utils/logger";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import {
   View,
-  SafeAreaView,
   StyleSheet,
   Keyboard,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { PressableScale } from "pressto";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
