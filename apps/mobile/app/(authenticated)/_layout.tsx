@@ -156,18 +156,12 @@ const AuthenticatedLayout = observer(function AuthenticatedLayout() {
         <Stack.Screen name="select-bank-type/[bankId]" options={nativeHeader} />
 
         {/* ── Screens with custom headers (headerShown: false, registered for routing) ── */}
-        <Stack.Screen
-          name="transactions"
-          options={{ contentStyle: { backgroundColor: theme.background } }}
-        />
+        <Stack.Screen name="transactions" options={nativeHeader} />
         <Stack.Screen
           name="edit-profile"
           options={{ contentStyle: { backgroundColor: theme.background } }}
         />
-        <Stack.Screen
-          name="create-budget-category/[budgetId]"
-          options={{ contentStyle: { backgroundColor: theme.background } }}
-        />
+        <Stack.Screen name="create-budget-category/[budgetId]" options={nativeHeader} />
       </Stack>
     </RealtimeSyncProvider>
   );

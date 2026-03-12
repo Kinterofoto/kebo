@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import logger from "@/utils/logger";
 import React, { FC, useEffect, useState, useRef, useCallback, useMemo } from "react";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams, Stack } from "expo-router";
 import {
   View,
   RefreshControl,
@@ -57,6 +57,7 @@ import tw from "twrnc";
 import moment from "moment";
 import { colors } from "@/theme/colors";
 import { useTheme } from "@/hooks/use-theme";
+import { standardHeader } from "@/theme/header-options";
 import { BackIconSvg } from "@/components/icons/back-svg";
 import { ArrowUpIconSvg } from "@/components/icons/arrow-up-icon";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -242,11 +243,12 @@ export const TransactionsScreen: FC<TransactionsScreenProps> = observer(
     });
 
     // Compute date range from selected months
+    // API expects full ISO 8601 datetime (z.string().datetime()), not just YYYY-MM-DD
     const monthDateRange = useMemo(() => {
       if (selectedMonths.length === 0) return {};
       const sorted = [...selectedMonths].sort();
-      const startDate = moment(sorted[0], "YYYY-MM").startOf("month").format("YYYY-MM-DD");
-      const endDate = moment(sorted[sorted.length - 1], "YYYY-MM").endOf("month").format("YYYY-MM-DD");
+      const startDate = moment(sorted[0], "YYYY-MM").startOf("month").toISOString();
+      const endDate = moment(sorted[sorted.length - 1], "YYYY-MM").endOf("month").toISOString();
       return { start_date: startDate, end_date: endDate };
     }, [selectedMonths]);
 
@@ -260,10 +262,25 @@ export const TransactionsScreen: FC<TransactionsScreenProps> = observer(
       ...monthDateRange,
     }), [selectedBanks, selectedCategories, selectedType, page, monthDateRange]);
 
-    const { data: txResponse, isLoading: queryLoading, isFetching } = useTransactions(apiFilters);
+    const { data: txResponse, isLoading: queryLoading, isFetching, isPlaceholderData } = useTransactions(apiFilters);
 
     // Accumulate transaction pages for infinite scroll
+    // Use JSON-stable key from apiFilters (excluding page) to detect filter changes
+    const filterKey = useMemo(() => JSON.stringify({
+      account_ids: apiFilters.account_ids,
+      category_ids: apiFilters.category_ids,
+      transaction_type: apiFilters.transaction_type,
+      start_date: apiFilters.start_date,
+      end_date: apiFilters.end_date,
+    }), [apiFilters]);
+
     useEffect(() => {
+      // Skip placeholder (stale) data from keepPreviousData to avoid showing
+      // results from a previous filter while the new query fetches
+      if (isPlaceholderData) {
+        setAllTransactions([]);
+        return;
+      }
       if (txResponse?.data) {
         if (page === 1) {
           setAllTransactions(txResponse.data);
@@ -275,7 +292,7 @@ export const TransactionsScreen: FC<TransactionsScreenProps> = observer(
           });
         }
       }
-    }, [txResponse, page]);
+    }, [txResponse, page, filterKey, isPlaceholderData]);
 
     const hasMore = txResponse ? txResponse.total > allTransactions.length : false;
 
@@ -423,7 +440,6 @@ export const TransactionsScreen: FC<TransactionsScreenProps> = observer(
         }
 
         setPage(1);
-        setAllTransactions([]);
       },
       [categories]
     );
@@ -439,7 +455,6 @@ export const TransactionsScreen: FC<TransactionsScreenProps> = observer(
       setSelectedCategories([]);
       setSelectedType(null);
       setPage(1);
-      setAllTransactions([]);
     }, []);
 
     const openBankModal = useCallback(() => {
@@ -609,45 +624,24 @@ export const TransactionsScreen: FC<TransactionsScreenProps> = observer(
     const onRefresh = useCallback(async () => {
       setRefreshing(true);
       setPage(1);
-      setAllTransactions([]);
       await queryClient.refetchQueries({ queryKey: queryKeys.transactions.all });
       setRefreshing(false);
     }, [queryClient]);
 
     return (
-      <Screen
-        safeAreaEdges={["top"]}
-        preset="fixed"
-        statusBarStyle={isDark ? "light" : "dark"}
-        backgroundColor={theme.background}
-        header={
-          <View style={tw`w-full`}>
-            <View style={tw`justify-between flex-row items-center`}>
-              <TouchableOpacity
-                onPress={() => router.back()}
-                style={tw`w-12 h-12 flex justify-center items-center shadow-md`}
-              >
-                <BackIconSvg width={15} height={15} color={theme.textPrimary} />
-              </TouchableOpacity>
-              <Text
-                style={tw`text-lg`}
-                weight="medium"
-                color={theme.textPrimary}
-              >
-                {translate("transactionScreen:transactionTitle")}
-              </Text>
-              <TouchableOpacity
-                style={tw`mr-4`}
-                onPress={() => setFilterModalVisible(true)}
-              >
-                {/* <FilterSvg /> */}
-              </TouchableOpacity>
-            </View>
-          </View>
-        }
-      >
+      <>
+        <Stack.Screen
+          options={{
+            ...standardHeader(theme),
+            headerShown: true,
+            headerBackTitle: translate("common:back"),
+            title: translate("transactionScreen:transactionTitle"),
+            contentStyle: { backgroundColor: theme.background },
+          }}
+        />
         <ScrollView
           ref={scrollViewRef}
+          contentInsetAdjustmentBehavior="automatic"
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -760,7 +754,7 @@ export const TransactionsScreen: FC<TransactionsScreenProps> = observer(
           </View>
 
           <View style={[tw`px-4 mt-4`, { backgroundColor: theme.background }]}>
-            {queryLoading && page === 1 ? (
+            {(queryLoading || (isFetching && allTransactions.length === 0)) && page === 1 ? (
               <View style={tw`flex-1 items-center justify-center py-8`}>
                 <ActivityIndicator size="large" color={colors.primary} />
                 <Text style={tw`mt-4 text-base`} color={theme.textSecondary}>
@@ -858,7 +852,7 @@ export const TransactionsScreen: FC<TransactionsScreenProps> = observer(
           }}
           selectedType={selectedType}
         />
-      </Screen>
+      </>
     );
   }
 );
