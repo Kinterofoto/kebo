@@ -19,7 +19,6 @@ import { useTheme } from "@/hooks/use-theme";
 import { supabase } from "@/config/supabase";
 import { showToast } from "@/components/ui/custom-toast";
 import { Text, Button, Icon } from "@/components/ui";
-import DeleteAccountModal from "@/components/common/delete-account-modal";
 import CustomCategoryModal from "@/components/common/custom-category-modal";
 import { useStores } from "@/models/helpers/use-stores";
 import { translate } from "@/i18n";
@@ -59,7 +58,6 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(
     const queryClient = useQueryClient();
     const { data: profile } = useProfile();
     const updateProfileMutation = useUpdateProfile();
-    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
     const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
     const [isEditingName, setIsEditingName] = useState(false);
     const [tempName, setTempName] = useState("");
@@ -191,9 +189,6 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(
       setRefreshing(false);
     }, [queryClient]);
 
-    const handleDeleteModalClose = useCallback(() => {
-      setIsDeleteModalVisible(false);
-    }, [trackProfileEvent]);
 
     const allCategories = useMemo(() => {
       return [...expenseCategories, ...incomeCategories];
@@ -241,6 +236,7 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(
         rows: [
           { symbol: "star", label: translate("profileScreen:rateUs"), onPress: () => StoreReview.requestReview() },
           { symbol: "square.and.arrow.up", label: translate("profileScreen:shareWithFriends"), onPress: () => Share.share({ message: translate("profileScreen:shareMessage") }) },
+          { symbol: "chevron.left.forwardslash.chevron.right", label: "GitHub", onPress: () => Linking.openURL(EXTERNAL_URLS.GITHUB) },
         ],
       },
       {
@@ -336,7 +332,7 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(
           </Text>
           <View style={tw`mb-6`}>
             <View
-              style={tw`bg-[${colors.primary}]/10 rounded-t-2xl px-4`}
+              style={tw`bg-[${colors.primary}]/10 rounded-2xl px-4`}
             >
               <View style={tw`p-4 my-1 flex-row justify-between items-center`}>
                 <View>
@@ -360,6 +356,7 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(
                 </View>
               </View>
             </View>
+            {/* TODO: Uncomment when Pro plan is ready
             <View style={tw`bg-[#6934D2] rounded-b-2xl px-4`}>
               <View style={tw`p-4 my-1 flex-row justify-between items-center`}>
                 <View>
@@ -379,6 +376,7 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(
                 </TouchableOpacity>
               </View>
             </View>
+            */}
           </View>
 
           {/* Data-driven sections */}
@@ -434,7 +432,7 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(
           >
             <TouchableOpacity
               style={tw`flex-row items-center px-4 py-3.5`}
-              onPress={() => setIsDeleteModalVisible(true)}
+              onPress={() => router.push("/(authenticated)/delete-account")}
             >
               <Icon symbol="trash" size={18} color="#EF4444" />
               <Text weight="medium" color="#EF4444" style={tw`flex-1 ml-3`}>
@@ -458,10 +456,6 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(
           </Text>
         </ScrollView>
 
-        <DeleteAccountModal
-          visible={isDeleteModalVisible}
-          onClose={handleDeleteModalClose}
-        />
         <CustomCategoryModal
           categories={allCategories}
           visible={isCategoryModalVisible}
