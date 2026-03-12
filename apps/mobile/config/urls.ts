@@ -7,8 +7,8 @@
 
 export const EXTERNAL_URLS = {
   // Legal
-  TERMS_CONDITIONS: "https://kebo.app/terminos-y-condiciones",
-  PRIVACY_POLICY: "https://kebo.app/politica-de-privacidad",
+  TERMS_CONDITIONS: "https://kebo.app/es/terms",
+  PRIVACY_POLICY: "https://kebo.app/es/privacy-policy",
   
   // Support
   WHATSAPP_SUPPORT: "https://wa.me/573176989062?text=Hello Kebo support! I need help with the app",
@@ -17,6 +17,9 @@ export const EXTERNAL_URLS = {
   // Social Media
   INSTAGRAM: "https://www.instagram.com/kebo.finanzas/",
   
+  // GitHub
+  GITHUB: "https://github.com/kebo-ai/kebo",
+
   // Feedback & Features
   FEATURE_REQUESTS: "https://keboapp.featurebase.app/",
   
