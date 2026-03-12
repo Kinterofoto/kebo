@@ -1,14 +1,9 @@
 import React, { useRef } from "react";
-import {
-  View,
-  Image,
-  useWindowDimensions,
-  StyleSheet,
-  Platform,
-} from "react-native";
+import { View, Image, useWindowDimensions, Platform } from "react-native";
 import { Text } from "@/components/ui";
 import AppIntroSlider from "react-native-app-intro-slider";
 import { colors } from "@/theme/colors";
+import { useTheme } from "@/hooks/use-theme";
 import CustomButton from "./custom-button";
 import { translate } from "@/i18n/translate";
 
@@ -32,11 +27,12 @@ const BudgetIntroSlider: React.FC<BudgetIntroSliderProps> = ({
 }) => {
   const sliderRef = useRef<AppIntroSlider>(null);
   const { width } = useWindowDimensions();
+  const { theme, isDark } = useTheme();
 
   const renderItem = ({ item }: { item: Slide }) => (
-    <View style={styles.slide}>
+    <View style={[styles.slide, { backgroundColor: theme.background }]}>
       <View style={styles.contentContainer}>
-        <Text weight="bold" style={styles.title}>
+        <Text weight="bold" style={[styles.title, { color: theme.textPrimary }]}>
           {translate("budgetOnboarding:welcome", {
             name: name?.trim() ? name.trim().split(" ")[0] : "",
           })}
@@ -46,7 +42,7 @@ const BudgetIntroSlider: React.FC<BudgetIntroSliderProps> = ({
           style={[styles.image, { width: width * 0.8, height: width * 0.8 }]}
           resizeMode="contain"
         />
-        <Text weight="light" style={styles.text}>{item.text}</Text>
+        <Text weight="light" style={[styles.text, { color: theme.textSecondary }]}>{item.text}</Text>
       </View>
     </View>
   );
@@ -58,10 +54,10 @@ const BudgetIntroSlider: React.FC<BudgetIntroSliderProps> = ({
       renderItem={renderItem}
       onDone={onDone}
       showSkipButton={false}
-      dotStyle={styles.dot}
+      dotStyle={[styles.dot, { backgroundColor: isDark ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)" }]}
       activeDotStyle={styles.activeDot}
       renderNextButton={() => (
-        <View style={styles.buttonContainer}>
+        <View style={[styles.buttonContainer, { backgroundColor: theme.background }]}>
           <CustomButton
             variant="primary"
             title="Siguiente"
@@ -75,7 +71,7 @@ const BudgetIntroSlider: React.FC<BudgetIntroSliderProps> = ({
         </View>
       )}
       renderDoneButton={() => (
-        <View style={styles.buttonContainer}>
+        <View style={[styles.buttonContainer, { backgroundColor: theme.background }]}>
           <CustomButton
             variant="primary"
             title="Listo"
@@ -89,28 +85,25 @@ const BudgetIntroSlider: React.FC<BudgetIntroSliderProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const styles = {
   slide: {
     flex: 1,
-    backgroundColor: colors.white,
     marginTop: -130,
   },
   contentContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
     paddingHorizontal: 10,
   },
   title: {
     fontSize: 20,
     marginBottom: 2,
-    color: colors.black,
-    textAlign: "center",
+    textAlign: "center" as const,
   },
   text: {
     fontSize: 14,
-    textAlign: "center",
-    color: colors.black,
+    textAlign: "center" as const,
     marginTop: 2,
     paddingHorizontal: 10,
   },
@@ -118,7 +111,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   dot: {
-    backgroundColor: "rgba(0, 0, 0, 0.2)",
     width: 8,
     height: 8,
     borderRadius: 4,
@@ -133,8 +125,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     paddingHorizontal: 20,
     paddingBottom: Platform.OS === "android" ? 100 : 100,
-    backgroundColor: colors.white,
   },
-});
+};
 
 export default BudgetIntroSlider;
