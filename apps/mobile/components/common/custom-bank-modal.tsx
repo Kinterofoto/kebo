@@ -16,7 +16,7 @@ import { Ionicons } from "@expo/vector-icons";
 import tw from "twrnc";
 import { MaterialIcons } from "@expo/vector-icons";
 import { colors } from "@/theme/colors";
-import { navigate } from "@/navigators";
+import { useRouter } from "expo-router";
 import { useStores } from "@/models/helpers/use-stores";
 import { observer } from "mobx-react-lite";
 import { getAccountsWithBalance } from "@/services/account-service";
@@ -66,6 +66,7 @@ const CustomBankModal: React.FC<CustomBankModalProps> = observer(
     screenName,
     hideBankActions = false,
   }) => {
+    const router = useRouter();
     const {
       transactionModel: { updateField },
     } = useStores();
@@ -376,15 +377,13 @@ const CustomBankModal: React.FC<CustomBankModalProps> = observer(
               } w-[65px] h-full justify-center items-center`,
             ]}
             onPress={() => {
-              navigate("AccountBalance", {
-                selectedBank: {
-                  ...data.item,
-                  bank_url: data.item.icon_url,
+              router.push({
+                pathname: "/(authenticated)/account-balance",
+                params: {
+                  accountId: data.item.id,
+                  isEditing: "true",
+                  fromScreen: screenName,
                 },
-                accountId: data.item.id,
-                isEditing: true,
-                accountData: data.item,
-                fromScreen: screenName,
               });
               onClose();
             }}
@@ -490,11 +489,14 @@ const CustomBankModal: React.FC<CustomBankModalProps> = observer(
               {!hideBankActions && (
                 <TouchableOpacity
                   onPress={() => {
-                    navigate("SelectBank", {
-                      isTransfer,
-                      transferType,
-                      fromBankModal: true,
-                      fromScreen: screenName,
+                    router.push({
+                      pathname: "/(authenticated)/select-bank",
+                      params: {
+                        isTransfer: isTransfer ? "true" : "false",
+                        transferType,
+                        fromBankModal: "true",
+                        fromScreen: screenName,
+                      },
                     });
                     onClose();
                   }}
