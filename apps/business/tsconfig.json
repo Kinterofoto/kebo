@@ -20,12 +20,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@kebo/api": ["../../apps/api/src"],
-      "@kebo/api/*": ["../../apps/api/src/*"],
       "@kebo/shared": ["../../packages/shared/src"],
-      "@kebo/shared/*": ["../../packages/shared/src/*"],
-      "@kebo/ui": ["../../packages/ui/src"],
-      "@kebo/ui/*": ["../../packages/ui/src/*"]
+      "@kebo/shared/*": ["../../packages/shared/src/*"]
     }
   },
   "include": [
@@ -35,8 +31,5 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules"],
-  "references": [
-    { "path": "../api" }
-  ]
+  "exclude": ["node_modules"]
 }
