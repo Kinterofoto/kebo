@@ -19,6 +19,7 @@
     "dashboard": "bun run --cwd apps/dashboard",
     "marketing": "bun run --cwd apps/marketing",
     "api": "bun run --cwd apps/api",
+    "business": "bun run --cwd apps/business",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:status": "supabase status",
