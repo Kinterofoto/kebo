@@ -8,7 +8,6 @@ const nextConfig: NextConfig = {
   // built-in checker doesn't support project references.
   typescript: { ignoreBuildErrors: true },
   experimental: {
-    turbopackFileSystemCacheForDev: true,
     turbopackFileSystemCacheForBuild: true,
   },
 };

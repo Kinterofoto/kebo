@@ -6,6 +6,8 @@ import { toast } from "sonner"
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
 
   const handleOAuthLogin = async (provider: "google" | "apple") => {
     const supabase = createClient()
@@ -23,6 +25,27 @@ export default function LoginPage() {
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Algo salio mal"
+      )
+      setIsLoading(false)
+    }
+  }
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const supabase = createClient()
+    setIsLoading(true)
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (error) throw error
+      window.location.href = "/"
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Credenciales incorrectas"
       )
       setIsLoading(false)
     }
@@ -51,6 +74,42 @@ export default function LoginPage() {
             <p className="text-sm text-neutral-400">
               Gestiona las finanzas de tu empresa
             </p>
+          </div>
+
+          {/* Email Login */}
+          <form onSubmit={handleEmailLogin} className="space-y-3 mb-6">
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-lg border border-neutral-700 bg-neutral-800/80 px-4 py-2.5 text-sm text-white placeholder-neutral-500 focus:border-kebo-500 focus:outline-none"
+              required
+            />
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full rounded-lg border border-neutral-700 bg-neutral-800/80 px-4 py-2.5 text-sm text-white placeholder-neutral-500 focus:border-kebo-500 focus:outline-none"
+              required
+            />
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full rounded-lg bg-kebo-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-kebo-600 disabled:opacity-50"
+            >
+              Iniciar sesión
+            </button>
+          </form>
+
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-neutral-700" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-black px-2 text-neutral-500">o continuar con</span>
+            </div>
           </div>
 
           {/* OAuth Buttons */}
