@@ -3,9 +3,7 @@
 import {
   Home,
   FileText,
-  Calculator,
-  BarChart3,
-  Users,
+  Link2,
   Settings,
   type LucideIcon,
 } from "lucide-react"
@@ -22,9 +20,7 @@ import {
 const navItems: { href: string; icon: LucideIcon; label: string }[] = [
   { href: "/", icon: Home, label: "Inicio" },
   { href: "/invoices", icon: FileText, label: "Facturas" },
-  { href: "/accounting", icon: Calculator, label: "Contabilidad" },
-  { href: "/reports", icon: BarChart3, label: "Reportes" },
-  { href: "/team", icon: Users, label: "Equipo" },
+  { href: "/dian", icon: Link2, label: "Conexion DIAN" },
   { href: "/settings", icon: Settings, label: "Configuracion" },
 ]
 
